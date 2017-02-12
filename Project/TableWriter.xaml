@@ -1,0 +1,74 @@
+﻿<Page
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Project"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:System="using:System"
+    xmlns:Charts="using:Syncfusion.UI.Xaml.Charts"
+    xmlns:syncfusion="using:Syncfusion.UI.Xaml.Charts"
+    x:Class="Project.TableWriter"
+    mc:Ignorable="d" Height="735.6" Width="1005.2">
+
+
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Button x:Name="MainPagebutton" Content= "Go to Main Page" Margin = "24,160,0,542" Click = "Button_Click"/>
+        <Button x:Name="BackButton" Content = "Go Back" Margin = "211,160,0,542" Click = "GoBack"/>
+        <Button x:Name="ForwardButton" Content = "Go Forward" Margin = "333,160,0,542" Click = "GoForward"/>
+        <TextBox x:Name="Ourcurrency"  Text="{x:Bind currencyL.Currency}" HorizontalAlignment="Left" Margin="21,79,0,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" />
+        <CalendarDatePicker  x:Name="MinDateOk" HorizontalAlignment="Left" Margin="220,79,0,0" VerticalAlignment="Top" PlaceholderText="Select a start date" DateFormat="{}{year.full}/{month.integer}/{day.integer} " DateChanged="MinDateOk_DateChanged"/>
+        <CalendarDatePicker  x:Name="MaxDateOk" HorizontalAlignment="Left" Margin="466,81,0,0" VerticalAlignment="Top" PlaceholderText="Select an end date" DateFormat="{}{year.full}/{month.integer}/{day.integer}" DateChanged="MaxDateOk_DateChanged"/>
+        <Button x:Name="plotGraph" Content="plot graph" HorizontalAlignment="Left" Margin="667,77,0,0" VerticalAlignment="Top" Click = "plotGraph_Click"/>
+        <Button x:Name="cancelGraph" Content="cancel plotting" HorizontalAlignment="Left" Margin="823,77,0,0" VerticalAlignment="Top" Click = "plotGraph_Click"/>
+        <TextBlock x:Name="initChooser"  HorizontalAlignment="Left" Margin="211,36,0,0" TextWrapping="Wrap" Text="Choose start date for plot" VerticalAlignment="Top"/>
+        <TextBlock x:Name="endChooser"  HorizontalAlignment="Left" Margin="463,36,0,0" TextWrapping="Wrap" Text="Choose end date for plot" VerticalAlignment="Top"/>
+        <TextBlock x:Name="currency"  HorizontalAlignment="Left" Margin="24,35,0,0" TextWrapping="Wrap" Text="Currency" VerticalAlignment="Top"/>
+        <TextBox x:Name="resultsTextBox" HorizontalAlignment="Left" Margin="466,161,0,0" TextWrapping="Wrap" Text="Output" VerticalAlignment="Top"/>
+        <ListView x:Name="datesListView" ItemsSource="{x:Bind plotModel.Currency}" HorizontalAlignment="Left" Height="433" Margin="730,160,0,0" VerticalAlignment="Top" Width="242">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="local:CurrencyModel">
+                    <StackPanel Orientation="Horizontal" Margin="6">
+                        <SymbolIcon Symbol="Calculator" Margin="0,0,12,0"/>
+                        <StackPanel>
+                            <TextBlock Text="{x:Bind FirstLineTable}" FontWeight="Bold"/>
+                            <TextBlock Text="{x:Bind SecondLineTable}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <Grid Margin="0,-10,0,10">
+
+            <syncfusion:SfChart HorizontalAlignment="Left" VerticalAlignment="Bottom" Header="Currency history" FontSize="20" 
+                    Height="500" Width="700">
+
+                <!--Initialize the horizontal axis for SfChart-->
+                <syncfusion:SfChart.PrimaryAxis>
+                    <syncfusion:CategoryAxis Header="Date" FontSize="14"/>
+                </syncfusion:SfChart.PrimaryAxis>
+
+
+                <!--Initialize the vertical axis for SfChart-->
+                <syncfusion:SfChart.SecondaryAxis>
+                    <syncfusion:NumericalAxis Header="Rate" FontSize="14"/>
+                </syncfusion:SfChart.SecondaryAxis>
+
+
+                <!--Adding Legend to the SfChart-->
+                <syncfusion:SfChart.Legend>
+                    <syncfusion:ChartLegend Visibility="Visible"/>
+                </syncfusion:SfChart.Legend>
+
+
+                <!--Initialize the series for SfChart-->
+                <syncfusion:FastLineSeries  ItemsSource="{x:Bind plotModel.Currency}" 
+    XBindingPath="FirstLineTable" YBindingPath="SecondLineTable" />
+
+                
+
+            </syncfusion:SfChart>
+        </Grid>
+    </Grid>
+</Page>
