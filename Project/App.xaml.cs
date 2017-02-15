@@ -7,6 +7,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -14,6 +15,8 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+
+
 
 namespace Project
 {
@@ -53,7 +56,7 @@ namespace Project
             {
                 // Create a Frame to act as the navigation context and navigate to the first page
                 rootFrame = new Frame();
-
+               // Project.Common.SuspensionManager.RegisterFrame(rootFrame, "appFrame");
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
@@ -98,9 +101,18 @@ namespace Project
         /// <param name="e">Details about the suspend request.</param>
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
+            
+
+           
             var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: Save application state and stop any background activity
+            Frame rootFrame = Window.Current.Content as Frame;
+            //string navstate = rootFrame.GetNavigationState();
+            var localSettings = ApplicationData.Current.LocalSettings;
+           // localSettings.Values["nav"] = navstate;
             deferral.Complete();
-        }
+        
+
+
+    }
     }
 }

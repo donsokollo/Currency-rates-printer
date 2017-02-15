@@ -40,9 +40,13 @@
         </ListView>
 
         <Grid Margin="0,-10,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="309*"/>
+                <ColumnDefinition Width="697*"/>
+            </Grid.ColumnDefinitions>
 
-            <syncfusion:SfChart HorizontalAlignment="Left" VerticalAlignment="Bottom" Header="Currency history" FontSize="20" 
-                    Height="500" Width="700">
+            <syncfusion:SfChart x:Name="This_chart" HorizontalAlignment="Left" VerticalAlignment="Bottom" Header="Currency history" FontSize="20" 
+                    Height="500" Width="700" Grid.ColumnSpan="2">
 
                 <!--Initialize the horizontal axis for SfChart-->
                 <syncfusion:SfChart.PrimaryAxis>
@@ -66,9 +70,12 @@
                 <syncfusion:FastLineSeries  ItemsSource="{x:Bind plotModel.Currency}" 
     XBindingPath="FirstLineTable" YBindingPath="SecondLineTable" />
 
-                
+
 
             </syncfusion:SfChart>
+
+          
         </Grid>
+        <Button x:Name="Save_Btn" Content = "Save chart" Margin = "783,666,0,36" Click = "Save_Btn_Click"/>
     </Grid>
 </Page>

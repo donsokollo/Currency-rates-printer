@@ -19,52 +19,86 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Globalization;
+using System.ComponentModel;
+using System.Collections.ObjectModel;
+
+using System.Runtime.InteropServices.ComTypes;
+using Syncfusion.UI.Xaml.Charts;
+using Windows.Storage;
+using Windows.Storage.Streams;
+using Windows.Graphics.Imaging;
+
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace Project
 {
-    
+
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class TableWriter : Page
+    public sealed partial class TableWriter : Page, INotifyPropertyChanged
     {
         public TableWriter()
         {
             this.InitializeComponent();
             this.plotModel = new PlotModel();
-            MinDateOk.MinDate = new DateTime( 2002, 10, 10);
+            this.plotModel1 = new PlotModel();
+            MinDateOk.MinDate = new DateTime(2002, 10, 10);
             MaxDateOk.MaxDate = System.DateTime.Now.Date;
-
+            this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
         }
+
+
         MainPageNaviData currencyL;
 
         private string basicUrl = "http://api.nbp.pl/api/exchangerates/rates/A/";
 
         // Declare a System.Threading.CancellationTokenSource.  
         CancellationTokenSource cts;
-        public PlotModel plotModel{ get; set; }
+        public PlotModel plotModel { get; set; }
 
+        public PlotModel plotModel1 { get; set; }
+        int packageSpan = 200; // a span of one download package for currency plot, must be <=365 due to server limits at uri
 
         private void plotGraph_Click(object sender, RoutedEventArgs e)
         {
-            if ( !MinDateOk.Date.Equals(null) && !MaxDateOk.Date.Equals(null))
+            if (!MinDateOk.Date.Equals(null) && !MaxDateOk.Date.Equals(null))
             {
                 this.currencyL.InitDate = MinDateOk.Date.Value.Date.ToString("yyyy-MM-dd");
                 this.currencyL.EndDate = MaxDateOk.Date.Value.Date.ToString("yyyy-MM-dd");
-                System.Diagnostics.Debug.WriteLine(this.currencyL.InitDate+"staaaaalo sieeee");
+                System.Diagnostics.Debug.WriteLine(this.currencyL.InitDate + "staaaaalo sieeee");
             }
             getCurrencyValue();
+            
+            //List<Order> objListOrder = new List<Order>();
+
+            // List<Order> SortedList = objListOrder.OrderBy(o => o.OrderDate).ToList();
         }
+
+
+
+
+        // Launches the file. 
+
+        // SaveFileDialog saveFileDialog = new SaveFileDialog();
+        // string C_imageFilesFilter = "Bitmap(*.bmp)|*.bmp|JPEG(*.jpg,*.jpeg)|*.jpg;*.jpeg|Gif (*.gif)|*.gif|TIFF(*.tiff)|*.tiff|PNG(*.png)|*.png|WDP(*.wdp)|*.wdp|Xps file (*.xps)|*.xps|All files (*.*)|*.*";
+        // saveFileDialog.Filter = C_imageFilesFilter;
+        //
+        //   if (saveFileDialog.ShowDialog() == true)
+        //    {             
+        //   Chart1.Save(saveFileDialog.FileName);
+        //    }
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-        private async  void getCurrencyValue()
+        private async void getCurrencyValue()
         {
+            // clears the current view of table and list
             this.plotModel.Currency.Clear();
-
+            resultsTextBox.Text = String.Format("");
             //resultsTextBox.ClearValue;
 
             // Instantiate the CancellationTokenSource.  
@@ -85,6 +119,25 @@ namespace Project
             }
 
             cts = null;
+
+            // PlotModel plotModel1 = new PlotModel();
+            SortItem();
+            plotModel.SortItem();
+            // plotModel1.Currency = (System.Collections.ObjectModel.ObservableCollection<CurrencyModel>)plotModel.Currency.OrderBy(o => o.Date);
+            // this.plotModel.Currency.Clear();
+            // this.plotModel.Currency = plotModel1.Currency;
+
+
+
+        }
+
+        public void SortItem()
+        {
+            IEnumerable<CurrencyModel> enumerable = plotModel.Currency.OrderBy(o => o.Date);
+            ObservableCollection<CurrencyModel> currency = new ObservableCollection<CurrencyModel>(enumerable);
+            plotModel1.Currency = currency;
+            System.Diagnostics.Debug.WriteLine("oooooo" + this.plotModel1.Currency.First<CurrencyModel>().Date);
+            System.Diagnostics.Debug.WriteLine("oooooo" + this.plotModel1.Currency.Last<CurrencyModel>().Date);
         }
 
         private void cancelButton_Click(object sender, RoutedEventArgs e)
@@ -120,14 +173,20 @@ namespace Project
                 // Identify the first task that completes.  
                 Task<string> firstFinishedTask = await Task.WhenAny(downloadTasks);
 
+
+
                 // ***Remove the selected task from the list so that you don't  
                 // process it more than once.  
                 downloadTasks.Remove(firstFinishedTask);
-
                 // Await the completed task.  
                 string xml = await firstFinishedTask;
+                System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!!!!!!!AccessTheWebAsync next xml is!!!!!!!!!!!");
+                System.Diagnostics.Debug.WriteLine(xml);
+                System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!!!!!!!AccessTheWebAsync next xml is!!!!!!!!!!!");
+
                 parseXML(xml);
-                resultsTextBox.Text = String.Format("");
+                // Await the completed task.  
+
                 resultsTextBox.Text += String.Format("\r\nLength of the download:  {0}", xml.Length);
             }
         }
@@ -143,10 +202,10 @@ namespace Project
             {
                 string date;
                 string rate;
-                System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!!!1111111!!!!!!!!!!!");
+                //System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!!!1111111!!!!!!!!!!!");
                 reader.MoveToContent();
-                System.Diagnostics.Debug.WriteLine(xml);
-                
+                //System.Diagnostics.Debug.WriteLine(xml);
+
                 while (reader.ReadToFollowing("Rates"))
                 {
                     reader.ReadToDescendant("Rate");
@@ -155,9 +214,11 @@ namespace Project
                         reader.ReadToFollowing("EffectiveDate");
                         date = reader.ReadElementContentAsString();
                         //System.Diagnostics.Debug.WriteLine(date);
+                        /* if (!reader.NodeType.Equals("None"))*/
                         reader.ReadToFollowing("Mid");
+
                         rate = reader.ReadElementContentAsString();
-                        //System.Diagnostics.Debug.WriteLine(rate);
+                        System.Diagnostics.Debug.WriteLine(rate);
                         CurrencyModel cur = new CurrencyModel(date, rate);
                         plotModel.Currency.Add(cur);
                     }
@@ -166,7 +227,7 @@ namespace Project
             }
         }
         /////////////
-      //  WebRequest request = HttpWebRequest.Create(url);
+        //  WebRequest request = HttpWebRequest.Create(url);
         //request.ContentType = "application/xml";
         //WebResponse response = await request.GetResponseAsync();
         //StreamReader reader = new StreamReader(response.GetResponseStream());
@@ -180,27 +241,56 @@ namespace Project
         private List<string> SetUpURLList()
         {
 
-
-            List<string> urls = new List<string>
+            List<SingleCurrency> packageList = defineListNumber();
+            List<string> urls = new List<string>();
+            int iii = 0;
+            foreach (SingleCurrency element in packageList)
             {
-                basicUrl+currencyL.Currency+"/"+currencyL.InitDate+"/"+currencyL.EndDate+"/?format=xml",
-                basicUrl+"EUR/2016-10-10/2017-01-01/?format=xml"
-                
-            };
-            System.Diagnostics.Debug.WriteLine(urls[1]);
-            System.Diagnostics.Debug.WriteLine(urls[0]);
+                urls.Add(basicUrl + element.Currency + "/" + element.InitDate + "/" + element.EndDate + "/?format=xml");
+                System.Diagnostics.Debug.WriteLine(iii + "      " + urls[iii++]);
+            }
+
+
+            //System.Diagnostics.Debug.WriteLine(urls[1]);
+            // System.Diagnostics.Debug.WriteLine(urls[0]);
             //System.Diagnostics.Debug.WriteLine(urls[2]);
             return urls;
+        }
+        private List<SingleCurrency> defineListNumber()
+        {
+            List<SingleCurrency> currList = new List<SingleCurrency>();
+            DateTime initDate = DateTime.ParseExact(currencyL.InitDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            DateTime endDate = DateTime.ParseExact(currencyL.EndDate, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+            int interval = endDate.Subtract(initDate).Days;
+            int fullPackageNumber = interval / this.packageSpan;
+            int remainder = interval - fullPackageNumber * this.packageSpan;
+            for (int i = 0; i < fullPackageNumber; i++) //defines all packages except for the last one having different packageSpan (reminder)
+            {
+                string startDate;
+                string toDate;
+                string currency = currencyL.Currency;
+                startDate = initDate.AddDays(i * this.packageSpan).ToString("yyyy-MM-dd");
+                toDate = initDate.AddDays((i + 1) * this.packageSpan).ToString("yyyy-MM-dd");
+                SingleCurrency data = new SingleCurrency(startDate, toDate, currency);
+                System.Diagnostics.Debug.WriteLine("      " + i + "     " + data);
+                currList.Add(data);
+
+            }
+            //makes and adds the last package with days span smaller than the packageSpan
+            SingleCurrency lastData = new SingleCurrency(endDate.AddDays(-remainder).ToString("yyyy-MM-dd"), endDate.ToString("yyyy-MM-dd"), currencyL.Currency);
+            currList.Add(lastData);
+            System.Diagnostics.Debug.WriteLine("  last" + "     " + lastData);
+            return currList;
         }
 
         async Task<String> ProcessURL(string url, HttpClient client, CancellationToken ct)
         {
             // GetAsync returns a Task<HttpResponseMessage>.   
             string response = await client.GetStringAsync(url);
-            System.Diagnostics.Debug.WriteLine("GETTING THERE!!!!!!!!!!!!!!!!!");
-            HttpResponseMessage res = await client.GetAsync(url, ct);
-            
-            System.Diagnostics.Debug.WriteLine("");
+            //System.Diagnostics.Debug.WriteLine("GETTING THERE!!!!!!!!!!!!!!!!!");
+            // HttpResponseMessage res = await client.GetAsync(url, ct);
+
+            System.Diagnostics.Debug.WriteLine("xml String retrieved from server");
 
             // System.Diagnostics.Debug.WriteLine("00000000000000000000!!!!!!!!!!!!!!!!!");
             // System.Diagnostics.Debug.WriteLine(response);
@@ -239,17 +329,41 @@ namespace Project
         {
             this.currencyL = (MainPageNaviData)e.Parameter;
             getCurrencyValue();
+            this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
         }
 
         private void MaxDateOk_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
         {
             MinDateOk.MaxDate = (DateTimeOffset)MaxDateOk.Date;
-                
+
         }
 
         private void MinDateOk_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
         {
             MaxDateOk.MinDate = (DateTimeOffset)MinDateOk.Date;
+        }
+
+
+
+        #region INotify
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+        }
+        #endregion
+
+        private async void Save_Btn_Click(object sender, RoutedEventArgs e)
+        {
+           
+            This_chart.Save();
+
+            
+
+
+
         }
     }
 }
