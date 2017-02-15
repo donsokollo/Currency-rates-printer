@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Project
 {
-    public class CurrencyModel
+    public class CurrencyModel 
     {
         public CurrencyModel(string code, string name, string rate, string converter)
         {

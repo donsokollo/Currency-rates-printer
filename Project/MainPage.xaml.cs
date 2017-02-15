@@ -40,15 +40,20 @@ namespace Project
         }
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            System.Func<string> itemId = sender.ToString;
-            this.Frame.Navigate(typeof(TableWriter), itemId);
+            string selDate = System.DateTime.Today.AddDays(-15).ToString("yyyy-MM-dd");
+
+            string currDate = System.DateTime.Today.ToString("yyyy-MM-dd");
+
+            string selCurrency = "USD";
+            MainPageNaviData data = new MainPageNaviData(selDate, currDate, selCurrency);
+            string SerializedData = selDate + "@" + currDate + "@" + selCurrency;
+            this.Frame.Navigate(typeof(TableWriter), SerializedData);
         }
 
 
         private string basicUrl = "http://www.nbp.pl/kursy/xml/";
         private string datesUrl = "http://www.nbp.pl/kursy/xml/dir.txt";
-        
-
+       
         private async Task<int> getDatesFromServer()
         {
             HttpClient client = new HttpClient();
@@ -62,6 +67,10 @@ namespace Project
 
             return 1;
         }
+
+
+      
+
 
         private void formatDatesResult(string input)
         {
@@ -84,6 +93,8 @@ namespace Project
         private void datesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             getInfoByDate((string) viewModel.RealFileNames[datesListView.SelectedIndex]);
+            viewModel.LastDate = viewModel.Dates[datesListView.SelectedIndex];
+            System.Diagnostics.Debug.WriteLine(viewModel.LastDate);
         }
 
 
@@ -149,7 +160,12 @@ namespace Project
             this.Frame.Navigate(typeof(TableWriter), SerializedData);
         }
 
-
+        private void cloesApp_Click(object sender, RoutedEventArgs e)
+        {
+            
+            Application.Current.Exit();
+        
     }
+}
 
 }

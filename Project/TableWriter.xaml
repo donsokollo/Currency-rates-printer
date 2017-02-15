@@ -17,11 +17,11 @@
         <Button x:Name="MainPagebutton" Content= "Go to Main Page" Margin = "24,160,0,542" Click = "Button_Click"/>
         <Button x:Name="BackButton" Content = "Go Back" Margin = "211,160,0,542" Click = "GoBack"/>
         <Button x:Name="ForwardButton" Content = "Go Forward" Margin = "333,160,0,542" Click = "GoForward"/>
-        <TextBox x:Name="Ourcurrency"  Text="{x:Bind currencyL.Currency, Mode=TwoWay}" HorizontalAlignment="Left" Margin="21,79,0,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" />
+        <TextBox x:Name="Ourcurrency"  Text="{x:Bind plotModel.CurrCode, Mode=TwoWay}" HorizontalAlignment="Left" Margin="21,79,0,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" />
         <CalendarDatePicker  x:Name="MinDateOk" HorizontalAlignment="Left" Margin="220,79,0,0" VerticalAlignment="Top" PlaceholderText="Select a start date" DateFormat="{}{year.full}/{month.integer}/{day.integer} " DateChanged="MinDateOk_DateChanged"/>
         <CalendarDatePicker  x:Name="MaxDateOk" HorizontalAlignment="Left" Margin="466,81,0,0" VerticalAlignment="Top" PlaceholderText="Select an end date" DateFormat="{}{year.full}/{month.integer}/{day.integer}" DateChanged="MaxDateOk_DateChanged"/>
         <Button x:Name="plotGraph" Content="plot graph" HorizontalAlignment="Left" Margin="667,77,0,0" VerticalAlignment="Top" Click = "plotGraph_Click"/>
-        <Button x:Name="cancelGraph" Content="cancel plotting" HorizontalAlignment="Left" Margin="823,77,0,0" VerticalAlignment="Top" Click = "plotGraph_Click"/>
+        <Button x:Name="cancelGraph" Content="cancel plotting" HorizontalAlignment="Left" Margin="823,77,0,0" VerticalAlignment="Top" Click = "cancelButton_Click"/>
         <TextBlock x:Name="initChooser"  HorizontalAlignment="Left" Margin="211,36,0,0" TextWrapping="Wrap" Text="Choose start date for plot" VerticalAlignment="Top"/>
         <TextBlock x:Name="endChooser"  HorizontalAlignment="Left" Margin="463,36,0,0" TextWrapping="Wrap" Text="Choose end date for plot" VerticalAlignment="Top"/>
         <TextBlock x:Name="currency"  HorizontalAlignment="Left" Margin="24,35,0,0" TextWrapping="Wrap" Text="Currency" VerticalAlignment="Top"/>
@@ -68,8 +68,8 @@
 
 
                 <!--Initialize the series for SfChart-->
-                <syncfusion:FastLineSeries  ItemsSource="{x:Bind plotModel.Currency}" 
-    XBindingPath="FirstLineTable" YBindingPath="SecondLineTable" />
+                <syncfusion:FastLineSeries  ItemsSource="{x:Bind plotModel.Currency, Mode=OneWay}" 
+    XBindingPath="Date" YBindingPath="Rate" />
 
 
 
@@ -80,5 +80,7 @@
         <ProgressBar  x:Name="download_progressBar" HorizontalAlignment="Left" Height="10" Margin="731,455,0,0" VerticalAlignment="Top" Width="239"/>
 
         <Button x:Name="Save_Btn" Content = "Save chart" Margin = "783,666,0,36" Click = "Save_Btn_Click"/>
+        <Button x:Name="closeApp" Content= "Close" Margin = "913,666,0,36" Click = "cloesApp_Click"/>
+
     </Grid>
 </Page>

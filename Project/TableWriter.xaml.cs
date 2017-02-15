@@ -29,6 +29,7 @@ using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.Graphics.Imaging;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
@@ -50,6 +51,7 @@ namespace Project
             MinDateOk.MinDate = new DateTime(2002, 10, 10);
             MaxDateOk.MaxDate = System.DateTime.Now.Date;
             this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
+            download_progressBar.Visibility = Visibility.Collapsed;
         }
 
 
@@ -70,7 +72,7 @@ namespace Project
         public PlotModel plotModel { get; set; }
 
         public PlotModel plotModel1 { get; set; }
-        int packageSpan = 200; // a span of one download package for currency plot, must be <=365 due to server limits at uri
+        int packageSpan = 50; // a span of one download package for currency plot, must be <=365 due to server limits at uri
 
         private void plotGraph_Click(object sender, RoutedEventArgs e)
         {
@@ -82,6 +84,7 @@ namespace Project
             }
             getCurrencyValue();
             
+            
             //List<Order> objListOrder = new List<Order>();
 
             // List<Order> SortedList = objListOrder.OrderBy(o => o.OrderDate).ToList();
@@ -89,19 +92,7 @@ namespace Project
 
 
 
-
-        // Launches the file. 
-
-        // SaveFileDialog saveFileDialog = new SaveFileDialog();
-        // string C_imageFilesFilter = "Bitmap(*.bmp)|*.bmp|JPEG(*.jpg,*.jpeg)|*.jpg;*.jpeg|Gif (*.gif)|*.gif|TIFF(*.tiff)|*.tiff|PNG(*.png)|*.png|WDP(*.wdp)|*.wdp|Xps file (*.xps)|*.xps|All files (*.*)|*.*";
-        // saveFileDialog.Filter = C_imageFilesFilter;
-        //
-        //   if (saveFileDialog.ShowDialog() == true)
-        //    {             
-        //   Chart1.Save(saveFileDialog.FileName);
-        //    }
-
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        
 
 
         private async void getCurrencyValue()
@@ -131,24 +122,28 @@ namespace Project
             cts = null;
             
             //SortItem();
-            plotModel.SortItem();
-            System.Diagnostics.Debug.WriteLine("oooooo" + this.plotModel.Currency.First<CurrencyModel>().Date + "oooooo" + this.plotModel.Currency.Last<CurrencyModel>().Date);
-            // plotModel1.Currency = (System.Collections.ObjectModel.ObservableCollection<CurrencyModel>)plotModel.Currency.OrderBy(o => o.Date);
-            // this.plotModel.Currency.Clear();
-            // this.plotModel.Currency = plotModel1.Currency;
-
-
-
+           //this.plotModel.SortItem(plotModel.Currency);
+            // this.plotModel.Currency.Add(new CurrencyModel("2017-02-15", "0"));
+            //System.Diagnostics.Debug.WriteLine("oooooo" + this.plotModel.Currency.First<CurrencyModel>().Date + "oooooo" + this.plotModel.Currency.Last<CurrencyModel>().Date);
+           
+            IEnumerable<CurrencyModel> enumerable = plotModel.Currency.OrderBy(o => o.Date);
+            
+            foreach (CurrencyModel element in enumerable)
+            {
+                this.plotModel.Currency.Add((CurrencyModel)element);
+            }
+            System.Diagnostics.Debug.WriteLine("oooooo" + this.plotModel.Currency.First<CurrencyModel>().Date);
+            System.Diagnostics.Debug.WriteLine("oooooo" + this.plotModel.Currency.Last<CurrencyModel>().Date);
         }
 
-        //public void SortItem()
-        //{
-        //    IEnumerable<CurrencyModel> enumerable = plotModel.Currency.OrderBy(o => o.Date);
-        //    ObservableCollection<CurrencyModel> currency = new ObservableCollection<CurrencyModel>(enumerable);
-        //    plotModel1.Currency = currency;
-        //    System.Diagnostics.Debug.WriteLine("oooooo" + this.plotModel1.Currency.First<CurrencyModel>().Date);
-        //    System.Diagnostics.Debug.WriteLine("oooooo" + this.plotModel1.Currency.Last<CurrencyModel>().Date);
-        //}
+        public void SortItem()
+        {
+            IEnumerable<CurrencyModel> enumerable = plotModel.Currency.OrderBy(o => o.Date);
+            plotModel.Currency = new ObservableCollection<CurrencyModel>(enumerable);
+            plotModel.Currency.Add(new CurrencyModel("2017-02-15", "1"));
+            System.Diagnostics.Debug.WriteLine("oooooo" + this.plotModel.Currency.First<CurrencyModel>().Date);
+           System.Diagnostics.Debug.WriteLine("oooooo" + this.plotModel.Currency.Last<CurrencyModel>().Date);
+        }
 
         private void cancelButton_Click(object sender, RoutedEventArgs e)
         {
@@ -173,6 +168,7 @@ namespace Project
             // ***Create a query that, when executed, returns a collection of tasks.  
             IEnumerable<Task<string>> downloadTasksQuery =
                 from url in urlList select ProcessURL(url, client, ct);
+            download_progressBar.Visibility = Visibility.Visible;
             download_progressBar.Maximum = urlList.Count;
 
             // ***Use ToList to execute the query and start the tasks.   
@@ -191,17 +187,18 @@ namespace Project
                 downloadTasks.Remove(firstFinishedTask);
                 // Await the completed task.  
                 string xml = await firstFinishedTask;
-                System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!!!!!!!AccessTheWebAsync next xml is!!!!!!!!!!!");
-                System.Diagnostics.Debug.WriteLine(xml);
-                System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!!!!!!!AccessTheWebAsync next xml is!!!!!!!!!!!");
+               // System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!!!!!!!AccessTheWebAsync next xml is!!!!!!!!!!!");
+               System.Diagnostics.Debug.WriteLine("what is it" + xml);
+               // System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!!!!!!!AccessTheWebAsync next xml is!!!!!!!!!!!");
 
-               currentProgress +=  parseXML(await firstFinishedTask);
+              currentProgress +=  parseXML(await firstFinishedTask);
                 // Await the completed task. 
               
                 download_progressBar.Value = currentProgress;
                 
                 resultsTextBox.Text += String.Format("\r\nLength of the download:  {0}", xml.Length);
             }
+            download_progressBar.Visibility = Visibility.Collapsed;
         }
 
 
@@ -209,30 +206,32 @@ namespace Project
         {
            int  currentProgress = 1;
 
-            System.Diagnostics.Debug.WriteLine(xml);
+            //System.Diagnostics.Debug.WriteLine(xml);
             
             // Create an XmlReader
             using (XmlReader reader = XmlReader.Create(new StringReader(xml)))
             {
                 string date;
-                string rate;
+                string rate ="0";
                 //System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!!!1111111!!!!!!!!!!!");
                 reader.MoveToContent();
                 //System.Diagnostics.Debug.WriteLine(xml);
 
-                while (reader.ReadToFollowing("Rates"))
+               // reader.ReadToFollowing("Rates");
+                reader.ReadToDescendant("Rate");
                 {
-                    reader.ReadToDescendant("Rate");
+                    
                     while (reader.ReadToFollowing("Rate"))
                     {
                         reader.ReadToFollowing("EffectiveDate");
                         date = reader.ReadElementContentAsString();
                         //System.Diagnostics.Debug.WriteLine(date);
                         /* if (!reader.NodeType.Equals("None"))*/
-                        reader.ReadToFollowing("Mid");
+                        //reader.ReadToFollowing("Mid");
                         rate = reader.ReadElementContentAsString();
-                        System.Diagnostics.Debug.WriteLine(rate);
-                        CurrencyModel cur = new CurrencyModel(date, rate);
+                       // System.Diagnostics.Debug.WriteLine(rate);
+                       // if (reader.ReadElementContentAsString.)
+                            CurrencyModel cur = new CurrencyModel(date, rate);
                         plotModel.Currency.Add(cur);
                     }
                 }
@@ -299,16 +298,15 @@ namespace Project
 
         async Task<String> ProcessURL(string url, HttpClient client, CancellationToken ct)
         {
-            // GetAsync returns a Task<HttpResponseMessage>.   
-            string response = await client.GetStringAsync(url);
-            //System.Diagnostics.Debug.WriteLine("GETTING THERE!!!!!!!!!!!!!!!!!");
-            // HttpResponseMessage res = await client.GetAsync(url, ct);
+           
+            HttpResponseMessage res = await client.GetAsync(url, ct);
+
+            res.EnsureSuccessStatusCode();
+            
+            string response = await res.Content.ReadAsStringAsync();  
 
             System.Diagnostics.Debug.WriteLine("xml String retrieved from server");
-
-            // System.Diagnostics.Debug.WriteLine("00000000000000000000!!!!!!!!!!!!!!!!!");
-            // System.Diagnostics.Debug.WriteLine(response);
-            //System.Diagnostics.Debug.WriteLine(date);
+          
             return response;
         }
 
@@ -347,6 +345,7 @@ namespace Project
             String[] separators = { "@" };
             String[] dataToHandle = e.Parameter.ToString().Split(separators, StringSplitOptions.RemoveEmptyEntries);
             this.currencyL = new MainPageNaviData(dataToHandle[0], dataToHandle[1], dataToHandle[2]);
+            plotModel.CurrCode = dataToHandle[2];
 
             getCurrencyValue();
             this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
@@ -379,7 +378,14 @@ namespace Project
                    
         }
 
+        private void cloesApp_Click(object sender, RoutedEventArgs e)
+        {
 
-     
+            Application.Current.Exit();
+
+        }
+
+
+
     }
 }

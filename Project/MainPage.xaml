@@ -10,13 +10,13 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,0,209,0.2">
         <Button x:Name="getDatesBtn" Content="Get dates" HorizontalAlignment="Left" Margin="50,23,0,0" VerticalAlignment="Top" Click="getDatesBtn_Click"/>
         <Button x:Name="changePage" Content = "Go to TableWriter" Margin = "518,23,0,479" Click = "Button_Click_1"/>
-        <TextBlock x:Name="statusText" HorizontalAlignment="Left" Margin="174,29,0,0" TextWrapping="Wrap" VerticalAlignment="Top">
+        <TextBlock x:Name="statusText" HorizontalAlignment="Left" Margin="32,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top">
             <Run Text="Status:"/>
             <LineBreak/>
             <Run/>
         </TextBlock>
-        <ListView x:Name="datesListView" ItemsSource="{x:Bind viewModel.Dates}" SelectionChanged="datesListView_SelectionChanged"  HorizontalAlignment="Left" Height="433" Margin="31,69,0,0" VerticalAlignment="Top" Width="242"/>
-        <ListView x:Name="currencyListView" ItemsSource="{x:Bind viewModel.Currency}" SelectionChanged="currencyListView_SelectionChanged" HorizontalAlignment="Left" Height="433" Margin="277,69,0,0" VerticalAlignment="Top" Width="410">
+        <ListView x:Name="datesListView" ItemsSource="{x:Bind viewModel.Dates}" SelectionChanged="datesListView_SelectionChanged"  HorizontalAlignment="Left" Height="385" Margin="31,117,0,0" VerticalAlignment="Top" Width="242"/>
+        <ListView x:Name="currencyListView" ItemsSource="{x:Bind viewModel.Currency}" SelectionChanged="currencyListView_SelectionChanged" HorizontalAlignment="Left" Height="385" Margin="277,117,0,0" VerticalAlignment="Top" Width="410">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local:CurrencyModel">
                     <StackPanel Orientation="Horizontal" Margin="6">
@@ -29,12 +29,15 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        
+        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="278,81,0,0" TextWrapping="Wrap" Text="Rates for" VerticalAlignment="Top"/>
+        <TextBlock x:Name="dateFor" HorizontalAlignment="Left" Margin="367,81,0,0" TextWrapping="Wrap" Text="{x:Bind viewModel.LastDate, Mode=TwoWay}" VerticalAlignment="Top"/>
+
+        <Button x:Name="cloesApp" Content="Close" HorizontalAlignment="Left" Margin="599,469,0,0" VerticalAlignment="Top" Click="cloesApp_Click"/>
+
 
 
     </Grid>
+
     
-    
-    
-    
+
 </Page>

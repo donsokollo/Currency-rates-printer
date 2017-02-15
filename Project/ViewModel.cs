@@ -21,6 +21,7 @@ namespace Project
         private ObservableCollection<CurrencyModel> currency = new ObservableCollection<CurrencyModel>();
         private ArrayList realFileNames = new ArrayList();
         private string lifeHistory;
+        private string lastDate;
 
 
         public ArrayList RealFileNames
@@ -50,8 +51,17 @@ namespace Project
             }
         }
 
+        public string LastDate
+        {
+            get { return this.lastDate; }
+            set
+            {
+                this.lastDate = value;
+                StoreLocalSettings();
+                this.OnPropertyChanged();
+            }
+        }
 
-        
         public string LifeHistory
         {
             get { return "LifeHistory: " + this.lifeHistory; }
@@ -72,7 +82,7 @@ namespace Project
             }
         }
 
-
+       
 
         // public ViewModel()
         // {
@@ -83,6 +93,7 @@ namespace Project
             composite["dates"] = "";
             composite["currency"] = "";
             composite["realFileNames"] = "";
+            composite["lastDate"] = "";
 
             foreach (string element in dates)
             {
@@ -101,6 +112,7 @@ namespace Project
                 composite["realFileNames"] += element + "@";
             }
             composite["lifeHistory"] = lifeHistory;
+            composite["lastDate"] = lastDate;
             localSettings.Values["DataBindingViewModel"] = composite;
             
 
@@ -123,8 +135,9 @@ namespace Project
         currency = new ObservableCollection<CurrencyModel>();
         realFileNames = new ArrayList();
 
-
+            lastDate = "";
         lifeHistory = "";
+
             localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             composite = (Windows.Storage.ApplicationDataCompositeValue)localSettings.Values["DataBindingViewModel"];
             if (composite == null)
@@ -176,6 +189,7 @@ namespace Project
                 
 
                 lifeHistory = (String)composite["lifeHistory"];
+                lastDate = (String)composite["lastDate"];
             }
         }
 

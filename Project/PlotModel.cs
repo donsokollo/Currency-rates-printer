@@ -20,7 +20,7 @@ namespace Project
 
 
         private ObservableCollection<CurrencyModel> currency = new ObservableCollection<CurrencyModel>();
-
+        private string currCode;
 
         public ObservableCollection<CurrencyModel> Currency
         {
@@ -33,14 +33,29 @@ namespace Project
             }
         }
 
+        public string CurrCode
+        {
+            get { return this.currCode; }
+            set
+            {
+                currCode = value;
+                StoreLocalSettings();
+                this.OnPropertyChanged();
+            }
+        }
         //public PlotModel()
         //{
         //}
-        
-        public void SortItem()
+
+        public void SortItem(ObservableCollection<CurrencyModel> currency)
         {
-            IEnumerable<CurrencyModel> enumerable = this.currency.OrderBy(o => o.Date);
-            ObservableCollection<CurrencyModel> currency = new ObservableCollection<CurrencyModel>(enumerable);
+            IEnumerable<CurrencyModel> enumerable = currency.OrderBy(o => o.Date);
+            this.currency.Clear();
+            foreach(CurrencyModel element in enumerable)
+            {
+                this.currency.Add((CurrencyModel)element);
+            }
+           // System.Diagnostics.Debug.WriteLine("oooooo" + currency.First<CurrencyModel>().Date + "oooooo" +currency.Last<CurrencyModel>().Date);
         }
 
 
@@ -56,7 +71,7 @@ namespace Project
         {
             myInstance = this;
            currency = new ObservableCollection<CurrencyModel>();
-                      
+            currCode = "";           
             localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
             composite = (Windows.Storage.ApplicationDataCompositeValue)localSettings.Values["DataBindingPlotModel"];
             if (composite == null)
@@ -87,7 +102,8 @@ namespace Project
                         currency.Add(component);
                     }
                 }
-                           
+                currCode = (String)composite["currCode"];
+
             }
         }
 
@@ -96,7 +112,7 @@ namespace Project
         public void StoreLocalSettings()
         {
             composite["currency"] = "";
-
+            
             
             foreach (CurrencyModel element in currency)
             {
@@ -104,7 +120,7 @@ namespace Project
                 composite["currency"] += element.Rate + "|";
                 composite["currency"] += "@";
             }
-     
+            composite["currCode"] = currCode;
             localSettings.Values["DataBindingPlotModel"] = composite;
 
 
