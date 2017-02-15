@@ -16,21 +16,21 @@ namespace Project
         public MainPage()
         {
             this.InitializeComponent();
-            this.viewModel = new ViewModel();
-            Application.Current.Suspending += new SuspendingEventHandler(App_Suspending);
-            Application.Current.Resuming += new EventHandler<Object>(App_Resuming);
+            this.viewModel = ViewModel.getInstance();
+            //Application.Current.Suspending += new SuspendingEventHandler(App_Suspending);
+            //Application.Current.Resuming += new EventHandler<Object>(App_Resuming);
             this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
         }
 
-        async void App_Suspending(Object sender, Windows.ApplicationModel.SuspendingEventArgs e)
-        {
-            //GetNavigationState();
-            // TODO: This is the time to save app data in case the process is terminated
-        }
-        private void App_Resuming(Object sender, Object e)
-        {
-            // TODO: Refresh network data, perform UI updates, and reacquire resources like cameras, I/O devices, etc.
-        }
+        //async void App_Suspending(Object sender, Windows.ApplicationModel.SuspendingEventArgs e)
+        //{
+        //    //GetNavigationState();
+        //    // TODO: This is the time to save app data in case the process is terminated
+        //}
+        //private void App_Resuming(Object sender, Object e)
+        //{
+        //    // TODO: Refresh network data, perform UI updates, and reacquire resources like cameras, I/O devices, etc.
+        //}
 
         public ViewModel viewModel { get; set; }
 
@@ -143,9 +143,10 @@ namespace Project
 
             string selCurrency = (string)viewModel.Currency[currencyListView.SelectedIndex].Code;
            MainPageNaviData data = new MainPageNaviData(selDate, currDate, selCurrency);
+            string SerializedData = selDate+"@"+currDate + "@" + selCurrency;
             System.Diagnostics.Debug.WriteLine(currDate);
             //System.Diagnostics.Debug.WriteLine(itemId);
-            this.Frame.Navigate(typeof(TableWriter), data);
+            this.Frame.Navigate(typeof(TableWriter), SerializedData);
         }
 
 

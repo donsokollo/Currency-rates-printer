@@ -7,6 +7,7 @@
     xmlns:System="using:System"
     xmlns:Charts="using:Syncfusion.UI.Xaml.Charts"
     xmlns:syncfusion="using:Syncfusion.UI.Xaml.Charts"
+    xmlns:Notification="using:Syncfusion.UI.Xaml.Controls.Notification"
     x:Class="Project.TableWriter"
     mc:Ignorable="d" Height="735.6" Width="1005.2">
 
@@ -16,7 +17,7 @@
         <Button x:Name="MainPagebutton" Content= "Go to Main Page" Margin = "24,160,0,542" Click = "Button_Click"/>
         <Button x:Name="BackButton" Content = "Go Back" Margin = "211,160,0,542" Click = "GoBack"/>
         <Button x:Name="ForwardButton" Content = "Go Forward" Margin = "333,160,0,542" Click = "GoForward"/>
-        <TextBox x:Name="Ourcurrency"  Text="{x:Bind currencyL.Currency}" HorizontalAlignment="Left" Margin="21,79,0,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" />
+        <TextBox x:Name="Ourcurrency"  Text="{x:Bind currencyL.Currency, Mode=TwoWay}" HorizontalAlignment="Left" Margin="21,79,0,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" />
         <CalendarDatePicker  x:Name="MinDateOk" HorizontalAlignment="Left" Margin="220,79,0,0" VerticalAlignment="Top" PlaceholderText="Select a start date" DateFormat="{}{year.full}/{month.integer}/{day.integer} " DateChanged="MinDateOk_DateChanged"/>
         <CalendarDatePicker  x:Name="MaxDateOk" HorizontalAlignment="Left" Margin="466,81,0,0" VerticalAlignment="Top" PlaceholderText="Select an end date" DateFormat="{}{year.full}/{month.integer}/{day.integer}" DateChanged="MaxDateOk_DateChanged"/>
         <Button x:Name="plotGraph" Content="plot graph" HorizontalAlignment="Left" Margin="667,77,0,0" VerticalAlignment="Top" Click = "plotGraph_Click"/>
@@ -24,8 +25,8 @@
         <TextBlock x:Name="initChooser"  HorizontalAlignment="Left" Margin="211,36,0,0" TextWrapping="Wrap" Text="Choose start date for plot" VerticalAlignment="Top"/>
         <TextBlock x:Name="endChooser"  HorizontalAlignment="Left" Margin="463,36,0,0" TextWrapping="Wrap" Text="Choose end date for plot" VerticalAlignment="Top"/>
         <TextBlock x:Name="currency"  HorizontalAlignment="Left" Margin="24,35,0,0" TextWrapping="Wrap" Text="Currency" VerticalAlignment="Top"/>
-        <TextBox x:Name="resultsTextBox" HorizontalAlignment="Left" Margin="466,161,0,0" TextWrapping="Wrap" Text="Output" VerticalAlignment="Top"/>
-        <ListView x:Name="datesListView" ItemsSource="{x:Bind plotModel.Currency}" HorizontalAlignment="Left" Height="433" Margin="730,160,0,0" VerticalAlignment="Top" Width="242">
+        <TextBox x:Name="resultsTextBox" HorizontalAlignment="Left" Margin="731,475,0,0" TextWrapping="Wrap" Text="Output" VerticalAlignment="Top" Height="160" Width="241"/>
+        <ListView x:Name="datesListView" ItemsSource="{x:Bind plotModel.Currency}" HorizontalAlignment="Left" Height="278" Margin="730,160,0,0" VerticalAlignment="Top" Width="242">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local:CurrencyModel">
                     <StackPanel Orientation="Horizontal" Margin="6">
@@ -39,7 +40,7 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <Grid Margin="0,-10,0,10">
+        <Grid Margin="0,-21,0,21">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="309*"/>
                 <ColumnDefinition Width="697*"/>
@@ -73,9 +74,11 @@
 
 
             </syncfusion:SfChart>
+           
 
-          
         </Grid>
+        <ProgressBar  x:Name="download_progressBar" HorizontalAlignment="Left" Height="10" Margin="731,455,0,0" VerticalAlignment="Top" Width="239"/>
+
         <Button x:Name="Save_Btn" Content = "Save chart" Margin = "783,666,0,36" Click = "Save_Btn_Click"/>
     </Grid>
 </Page>

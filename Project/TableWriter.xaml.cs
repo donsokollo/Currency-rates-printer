@@ -28,6 +28,7 @@ using Syncfusion.UI.Xaml.Charts;
 using Windows.Storage;
 using Windows.Storage.Streams;
 using Windows.Graphics.Imaging;
+using System.Runtime.CompilerServices;
 
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
@@ -43,8 +44,9 @@ namespace Project
         public TableWriter()
         {
             this.InitializeComponent();
-            this.plotModel = new PlotModel();
+            this.plotModel = PlotModel.getInstance();
             this.plotModel1 = new PlotModel();
+           
             MinDateOk.MinDate = new DateTime(2002, 10, 10);
             MaxDateOk.MaxDate = System.DateTime.Now.Date;
             this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
@@ -52,6 +54,14 @@ namespace Project
 
 
         MainPageNaviData currencyL;
+        public MainPageNaviData CurrencyL{
+            get { return this.currencyL; }
+            set
+            {
+                currencyL = value;
+                this.OnPropertyChanged();
+            }
+        }
 
         private string basicUrl = "http://api.nbp.pl/api/exchangerates/rates/A/";
 
@@ -119,10 +129,10 @@ namespace Project
             }
 
             cts = null;
-
-            // PlotModel plotModel1 = new PlotModel();
-            SortItem();
+            
+            //SortItem();
             plotModel.SortItem();
+            System.Diagnostics.Debug.WriteLine("oooooo" + this.plotModel.Currency.First<CurrencyModel>().Date + "oooooo" + this.plotModel.Currency.Last<CurrencyModel>().Date);
             // plotModel1.Currency = (System.Collections.ObjectModel.ObservableCollection<CurrencyModel>)plotModel.Currency.OrderBy(o => o.Date);
             // this.plotModel.Currency.Clear();
             // this.plotModel.Currency = plotModel1.Currency;
@@ -131,14 +141,14 @@ namespace Project
 
         }
 
-        public void SortItem()
-        {
-            IEnumerable<CurrencyModel> enumerable = plotModel.Currency.OrderBy(o => o.Date);
-            ObservableCollection<CurrencyModel> currency = new ObservableCollection<CurrencyModel>(enumerable);
-            plotModel1.Currency = currency;
-            System.Diagnostics.Debug.WriteLine("oooooo" + this.plotModel1.Currency.First<CurrencyModel>().Date);
-            System.Diagnostics.Debug.WriteLine("oooooo" + this.plotModel1.Currency.Last<CurrencyModel>().Date);
-        }
+        //public void SortItem()
+        //{
+        //    IEnumerable<CurrencyModel> enumerable = plotModel.Currency.OrderBy(o => o.Date);
+        //    ObservableCollection<CurrencyModel> currency = new ObservableCollection<CurrencyModel>(enumerable);
+        //    plotModel1.Currency = currency;
+        //    System.Diagnostics.Debug.WriteLine("oooooo" + this.plotModel1.Currency.First<CurrencyModel>().Date);
+        //    System.Diagnostics.Debug.WriteLine("oooooo" + this.plotModel1.Currency.Last<CurrencyModel>().Date);
+        //}
 
         private void cancelButton_Click(object sender, RoutedEventArgs e)
         {
@@ -163,10 +173,11 @@ namespace Project
             // ***Create a query that, when executed, returns a collection of tasks.  
             IEnumerable<Task<string>> downloadTasksQuery =
                 from url in urlList select ProcessURL(url, client, ct);
+            download_progressBar.Maximum = urlList.Count;
 
             // ***Use ToList to execute the query and start the tasks.   
             List<Task<string>> downloadTasks = downloadTasksQuery.ToList();
-
+            int currentProgress = 0; //progress of downloading
             // ***Add a loop to process the tasks one at a time until none remain.  
             while (downloadTasks.Count > 0)
             {
@@ -184,19 +195,22 @@ namespace Project
                 System.Diagnostics.Debug.WriteLine(xml);
                 System.Diagnostics.Debug.WriteLine("!!!!!!!!!!!!!!!!!AccessTheWebAsync next xml is!!!!!!!!!!!");
 
-                parseXML(xml);
-                // Await the completed task.  
-
+               currentProgress +=  parseXML(await firstFinishedTask);
+                // Await the completed task. 
+              
+                download_progressBar.Value = currentProgress;
+                
                 resultsTextBox.Text += String.Format("\r\nLength of the download:  {0}", xml.Length);
             }
         }
 
 
-        private void parseXML(string xml)
+        private int parseXML(string xml)
         {
+           int  currentProgress = 1;
 
             System.Diagnostics.Debug.WriteLine(xml);
-
+            
             // Create an XmlReader
             using (XmlReader reader = XmlReader.Create(new StringReader(xml)))
             {
@@ -216,7 +230,6 @@ namespace Project
                         //System.Diagnostics.Debug.WriteLine(date);
                         /* if (!reader.NodeType.Equals("None"))*/
                         reader.ReadToFollowing("Mid");
-
                         rate = reader.ReadElementContentAsString();
                         System.Diagnostics.Debug.WriteLine(rate);
                         CurrencyModel cur = new CurrencyModel(date, rate);
@@ -225,6 +238,7 @@ namespace Project
                 }
 
             }
+            return currentProgress;
         }
         /////////////
         //  WebRequest request = HttpWebRequest.Create(url);
@@ -305,14 +319,17 @@ namespace Project
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             this.Frame.Navigate(typeof(MainPage));
+            ViewModel.getInstance();
         }
         void GoBack(object sender, RoutedEventArgs e)
         {
             if (this.Frame != null && this.Frame.CanGoBack) this.Frame.GoBack();
+            ViewModel.getInstance();
         }
         void GoForward(object sender, RoutedEventArgs e)
         {
             if (this.Frame != null && this.Frame.CanGoForward) this.Frame.GoForward();
+            ViewModel.getInstance();
         }
 #if WINDOWS_PHONE_APP
         void HardwareButtons_BackPressed(object sender,
@@ -327,7 +344,10 @@ namespace Project
 #endif
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            this.currencyL = (MainPageNaviData)e.Parameter;
+            String[] separators = { "@" };
+            String[] dataToHandle = e.Parameter.ToString().Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            this.currencyL = new MainPageNaviData(dataToHandle[0], dataToHandle[1], dataToHandle[2]);
+
             getCurrencyValue();
             this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
         }
@@ -345,25 +365,21 @@ namespace Project
 
 
 
-        #region INotify
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void OnPropertyChanged(string propertyName)
+        public event PropertyChangedEventHandler PropertyChanged = delegate { };
+        public void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            // Raise the PropertyChanged event, passing the name of the property whose value has changed.
+            this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
         }
-        #endregion
 
         private async void Save_Btn_Click(object sender, RoutedEventArgs e)
         {
            
             This_chart.Save();
-
-            
-
-
-
+                   
         }
+
+
+     
     }
 }

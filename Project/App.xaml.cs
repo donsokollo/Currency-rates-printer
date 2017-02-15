@@ -33,21 +33,28 @@ namespace Project
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
-        }
+            Application.Current.Resuming += new EventHandler<Object>(App_Resuming);
+            this.viewModel = new ViewModel();
+            this.plotModel = new PlotModel();
 
+        }
+        public ViewModel viewModel { get; set; }
+        public PlotModel plotModel { get; set; }
         /// <summary>
         /// Invoked when the application is launched normally by the end user.  Other entry points
         /// will be used such as when the application is launched to open a specific file.
         /// </summary>
         /// <param name="e">Details about the launch request and process.</param>
+
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
-#if DEBUG
-            if (System.Diagnostics.Debugger.IsAttached)
-            {
-                this.DebugSettings.EnableFrameRateCounter = true;
-            }
-#endif
+            //#if DEBUG
+            //            if (System.Diagnostics.Debugger.IsAttached)
+            //            {
+            //                this.DebugSettings.EnableFrameRateCounter = true;
+            //            }
+            //#endif
+
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,
@@ -56,7 +63,7 @@ namespace Project
             {
                 // Create a Frame to act as the navigation context and navigate to the first page
                 rootFrame = new Frame();
-               // Project.Common.SuspensionManager.RegisterFrame(rootFrame, "appFrame");
+
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
@@ -68,19 +75,45 @@ namespace Project
                 Window.Current.Content = rootFrame;
             }
 
-            if (e.PrelaunchActivated == false)
+            if (rootFrame.Content == null)
             {
-                if (rootFrame.Content == null)
+                // When the navigation stack isn't restored navigate to the first page,
+                // configuring the new page by passing required information as a navigation
+                // parameter
+                //rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated ||
+                    e.PreviousExecutionState == ApplicationExecutionState.ClosedByUser)
                 {
-                    // When the navigation stack isn't restored navigate to the first page,
-                    // configuring the new page by passing required information as a navigation
-                    // parameter
+                    object value;
+                    var localSettings = ApplicationData.Current.LocalSettings;
+                    if (localSettings.Values.TryGetValue("nav", out value))
+                    {
+                        rootFrame.SetNavigationState(value as string);
+                    }
+                    else
+                    {
+                        rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                    }
+                }
+                else
+                {
                     rootFrame.Navigate(typeof(MainPage), e.Arguments);
                 }
-                // Ensure the current window is active
-                Window.Current.Activate();
             }
+            // Ensure the current window is active
+            rootFrame.CacheSize = 2;
+            Window.Current.Activate();
         }
+
+
+
+
+
+
+
+
+
+
 
         /// <summary>
         /// Invoked when Navigation to a certain page fails
@@ -101,18 +134,22 @@ namespace Project
         /// <param name="e">Details about the suspend request.</param>
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
-            
 
-           
+
+
             var deferral = e.SuspendingOperation.GetDeferral();
             Frame rootFrame = Window.Current.Content as Frame;
-            //string navstate = rootFrame.GetNavigationState();
+            string navstate = rootFrame.GetNavigationState();
             var localSettings = ApplicationData.Current.LocalSettings;
-           // localSettings.Values["nav"] = navstate;
+            localSettings.Values["nav"] = navstate;
+            viewModel.LifeHistory = "suspended";
             deferral.Complete();
-        
 
 
-    }
+        }
+        private void App_Resuming(Object sender, Object e)
+        {
+            viewModel.LifeHistory = "resumed";
+        }
     }
 }
