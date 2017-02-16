@@ -5,9 +5,9 @@
     xmlns:local="using:Project"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" Height="535.6" Width="856.6">
+    mc:Ignorable="d" Height="650" Width="960">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,0,209,0.2">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,0,0,0">
         <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,0,0,489">
             <RelativePanel Margin="10,10,10,0">
                 <Button x:Name="cloesApp" Content="Close" RelativePanel.AlignRightWithPanel="True"   Click="cloesApp_Click"/>
@@ -43,9 +43,9 @@
         </Grid>
         <RelativePanel Margin="10,151,10,10">
 
-            <ListView x:Name="datesListView" ItemsSource="{x:Bind viewModel.Dates}" SelectionChanged="datesListView_SelectionChanged"  RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True" Width="242"/>
+            <ListView x:Name="datesListView" ItemsSource="{x:Bind viewModel.Dates}" SelectionChanged="datesListView_SelectionChanged"  RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True" Width="300"/>
 
-            <ListView x:Name="currencyListView" ItemsSource="{x:Bind viewModel.Currency}" SelectionChanged="currencyListView_SelectionChanged" RelativePanel.RightOf="datesListView" Width="410">
+            <ListView x:Name="currencyListView" ItemsSource="{x:Bind viewModel.Currency}" SelectionChanged="currencyListView_SelectionChanged" RelativePanel.RightOf="datesListView" Width="400">
                 <ListView.ItemTemplate>
                     <DataTemplate x:DataType="local:CurrencyModel">
                         <StackPanel Orientation="Horizontal" Margin="6">

@@ -9,11 +9,11 @@
     xmlns:syncfusion="using:Syncfusion.UI.Xaml.Charts"
     xmlns:Notification="using:Syncfusion.UI.Xaml.Controls.Notification"
     x:Class="Project.TableWriter"
-    mc:Ignorable="d" Height="735.6" Width="1005.2">
+    mc:Ignorable="d" Height="650" Width="960">
 
 
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,0,-0.4,55.2">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,0,0,0">
 
         <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,0,0,608">
             <RelativePanel Margin="10,10,10,0">
@@ -28,72 +28,74 @@
                  </RelativePanel>
         </Grid>
 
-        <Grid Margin="0,72,0,475">
-            <RelativePanel Margin="10,10,10,0">
-                <TextBox x:Name="Ourcurrency"  Text="{x:Bind plotModel.CurrCode, Mode=TwoWay}"  TextWrapping="Wrap" IsReadOnly="True" />
-                <CalendarDatePicker  x:Name="MinDateOk" RelativePanel.RightOf="Ourcurrency" Margin="10,0" PlaceholderText="Select a start date" DateFormat="{}{year.full}/{month.integer}/{day.integer} " DateChanged="MinDateOk_DateChanged"/>
-                <TextBlock x:Name="initChooser" RelativePanel.RightOf="MinDateOk" Margin="10,5" TextWrapping="Wrap" Text="to" />
-                <CalendarDatePicker  x:Name="MaxDateOk" RelativePanel.RightOf="initChooser" Margin="10,0" PlaceholderText="Select an end date" DateFormat="{}{year.full}/{month.integer}/{day.integer}" DateChanged="MaxDateOk_DateChanged"/>
+        
+            <RelativePanel Margin="10,72,10,0">
+            <ListView x:Name="datesListView"  BorderBrush="Brown" ItemsSource="{x:Bind plotModel.Currency}" RelativePanel.AlignRightWithPanel="True" Margin="0,60" RelativePanel.AlignTopWith="This_chart" Height="200" VerticalAlignment="Top" Width="242">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="local:CurrencyModel">
+                            <StackPanel Orientation="Horizontal" Margin="6">
+                                <SymbolIcon Symbol="Calculator" Margin="0,0,12,0"/>
+                                <StackPanel>
+                                    <TextBlock Text="{x:Bind FirstLineTable}" FontWeight="Bold"/>
+                                    <TextBlock Text="{x:Bind SecondLineTable}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
 
-                <Button x:Name="plotGraph" Content="Plot" RelativePanel.RightOf="MaxDateOk" Margin="20,0" Click = "plotGraph_Click"/>
-                <Button x:Name="cancelGraph" Content="Cancel" RelativePanel.RightOf="plotGraph" Click = "cancelButton_Click"/>
+            <ProgressBar  x:Name="download_progressBar" RelativePanel.AlignBottomWith="datesListView" Margin="0,0,0,20" Height="10"  RelativePanel.AlignRightWithPanel="True" Width="239"/>
+            <TextBox x:Name="resultsTextBox"  TextWrapping="Wrap" Text="Output" RelativePanel.AlignTopWith="download_progressBar" Margin="-238.6,30.4,0.4,59.4" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignBottomWith="This_chart"/>
+
+            <syncfusion:SfChart x:Name="This_chart" RelativePanel.AlignLeftWithPanel= "True" Header="Currency history" FontSize="20" 
+                    Height="450" Width="650" Grid.ColumnSpan="2" Margin="0,0,0,18">
+
+                    <!--Initialize the horizontal axis for SfChart-->
+                    <syncfusion:SfChart.PrimaryAxis>
+                        <syncfusion:CategoryAxis Header="Date" FontSize="14"/>
+                    </syncfusion:SfChart.PrimaryAxis>
+
+
+                    <!--Initialize the vertical axis for SfChart-->
+                    <syncfusion:SfChart.SecondaryAxis>
+                        <syncfusion:NumericalAxis Header="Rate" FontSize="14"/>
+                    </syncfusion:SfChart.SecondaryAxis>
+
+
+                    <!--Adding Legend to the SfChart-->
+                    <syncfusion:SfChart.Legend>
+                        <syncfusion:ChartLegend Visibility="Visible"/>
+                    </syncfusion:SfChart.Legend>
+
+
+                    <!--Initialize the series for SfChart-->
+                    <syncfusion:FastLineSeries  x:Name="Series"  ItemsSource="{x:Bind plotModel.Currency, Mode=OneWay}" 
+                        XBindingPath="Date" YBindingPath="Rate" Margin="0,-3,-0.4,3" />
+
+                </syncfusion:SfChart>
 
             </RelativePanel>
          
-       </Grid>
-        <TextBox x:Name="resultsTextBox" HorizontalAlignment="Left" Margin="740,412,0,0" TextWrapping="Wrap" Text="Output" VerticalAlignment="Top" Height="189" Width="241"/>
-        <ListView x:Name="datesListView" ItemsSource="{x:Bind plotModel.Currency}" HorizontalAlignment="Left" Height="278" Margin="748,82,0,0" VerticalAlignment="Top" Width="242">
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="local:CurrencyModel">
-                    <StackPanel Orientation="Horizontal" Margin="6">
-                        <SymbolIcon Symbol="Calculator" Margin="0,0,12,0"/>
-                        <StackPanel>
-                            <TextBlock Text="{x:Bind FirstLineTable}" FontWeight="Bold"/>
-                            <TextBlock Text="{x:Bind SecondLineTable}"/>
-                        </StackPanel>
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-
+      
+        
+        
         <Grid Margin="0,-21,0,21">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="309*"/>
-                <ColumnDefinition Width="697*"/>
-            </Grid.ColumnDefinitions>
+           
 
-            <syncfusion:SfChart x:Name="This_chart" HorizontalAlignment="Left" VerticalAlignment="Bottom" Header="Currency history" FontSize="20" 
-                    Height="500" Width="700" Grid.ColumnSpan="2" Margin="0,0,0,18">
-
-                <!--Initialize the horizontal axis for SfChart-->
-                <syncfusion:SfChart.PrimaryAxis>
-                    <syncfusion:CategoryAxis Header="Date" FontSize="14"/>
-                </syncfusion:SfChart.PrimaryAxis>
-
-
-                <!--Initialize the vertical axis for SfChart-->
-                <syncfusion:SfChart.SecondaryAxis>
-                    <syncfusion:NumericalAxis Header="Rate" FontSize="14"/>
-                </syncfusion:SfChart.SecondaryAxis>
-
-
-                <!--Adding Legend to the SfChart-->
-                <syncfusion:SfChart.Legend>
-                    <syncfusion:ChartLegend Visibility="Visible"/>
-                </syncfusion:SfChart.Legend>
-
-
-                <!--Initialize the series for SfChart-->
-                <syncfusion:FastLineSeries  ItemsSource="{x:Bind plotModel.Currency, Mode=OneWay}" 
-    XBindingPath="Date" YBindingPath="Rate" Margin="0,-3,-0.4,3" />
-
-            </syncfusion:SfChart>
+           
         </Grid>
-        <ProgressBar  x:Name="download_progressBar" HorizontalAlignment="Left" Height="10" Margin="740,386,0,0" VerticalAlignment="Top" Width="239"/>
+       
 
        
-        <RelativePanel Margin="10,10,10,10">
+        <RelativePanel  Margin="10,10,10,10">
             <Button x:Name="Save_Btn" Content = "Save chart" RelativePanel.AlignBottomWithPanel="True" RelativePanel.AlignRightWithPanel="True" Click = "Save_Btn_Click"/>
+            <TextBox x:Name="Ourcurrency"  Text="{x:Bind plotModel.CurrCode, Mode=TwoWay}"   RelativePanel.Above="Save_Btn" TextWrapping="Wrap" IsReadOnly="True" />
+            <CalendarDatePicker  x:Name="MinDateOk" RelativePanel.RightOf="Ourcurrency" Margin="10,0"  RelativePanel.Above="Save_Btn"  PlaceholderText="Select a start date" DateFormat="{}{year.full}/{month.integer}/{day.integer} " DateChanged="MinDateOk_DateChanged"/>
+            <TextBlock x:Name="initChooser" RelativePanel.RightOf="MinDateOk" Margin="10,5"   RelativePanel.Above="Save_Btn" TextWrapping="Wrap" Text="to" />
+            <CalendarDatePicker  x:Name="MaxDateOk" RelativePanel.RightOf="initChooser" Margin="10,0" RelativePanel.Above="Save_Btn"  PlaceholderText="Select an end date" DateFormat="{}{year.full}/{month.integer}/{day.integer}" DateChanged="MaxDateOk_DateChanged"/>
+
+            <Button x:Name="plotGraph" Content="Plot" RelativePanel.RightOf="MaxDateOk" Margin="20,0" RelativePanel.Above="Save_Btn"  Click = "plotGraph_Click"/>
+            <Button x:Name="cancelGraph" Content="Cancel" RelativePanel.RightOf="plotGraph"   RelativePanel.Above="Save_Btn" Click = "cancelButton_Click"/>
         </RelativePanel>
 
     </Grid>
