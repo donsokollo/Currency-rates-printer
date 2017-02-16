@@ -13,20 +13,36 @@
 
 
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Button x:Name="MainPagebutton" Content= "Go to Main Page" Margin = "24,160,0,542" Click = "Button_Click"/>
-        <Button x:Name="BackButton" Content = "Go Back" Margin = "211,160,0,542" Click = "GoBack"/>
-        <Button x:Name="ForwardButton" Content = "Go Forward" Margin = "333,160,0,542" Click = "GoForward"/>
-        <TextBox x:Name="Ourcurrency"  Text="{x:Bind plotModel.CurrCode, Mode=TwoWay}" HorizontalAlignment="Left" Margin="21,79,0,0" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" />
-        <CalendarDatePicker  x:Name="MinDateOk" HorizontalAlignment="Left" Margin="220,79,0,0" VerticalAlignment="Top" PlaceholderText="Select a start date" DateFormat="{}{year.full}/{month.integer}/{day.integer} " DateChanged="MinDateOk_DateChanged"/>
-        <CalendarDatePicker  x:Name="MaxDateOk" HorizontalAlignment="Left" Margin="466,81,0,0" VerticalAlignment="Top" PlaceholderText="Select an end date" DateFormat="{}{year.full}/{month.integer}/{day.integer}" DateChanged="MaxDateOk_DateChanged"/>
-        <Button x:Name="plotGraph" Content="plot graph" HorizontalAlignment="Left" Margin="667,77,0,0" VerticalAlignment="Top" Click = "plotGraph_Click"/>
-        <Button x:Name="cancelGraph" Content="cancel plotting" HorizontalAlignment="Left" Margin="823,77,0,0" VerticalAlignment="Top" Click = "cancelButton_Click"/>
-        <TextBlock x:Name="initChooser"  HorizontalAlignment="Left" Margin="211,36,0,0" TextWrapping="Wrap" Text="Choose start date for plot" VerticalAlignment="Top"/>
-        <TextBlock x:Name="endChooser"  HorizontalAlignment="Left" Margin="463,36,0,0" TextWrapping="Wrap" Text="Choose end date for plot" VerticalAlignment="Top"/>
-        <TextBlock x:Name="currency"  HorizontalAlignment="Left" Margin="24,35,0,0" TextWrapping="Wrap" Text="Currency" VerticalAlignment="Top"/>
-        <TextBox x:Name="resultsTextBox" HorizontalAlignment="Left" Margin="731,475,0,0" TextWrapping="Wrap" Text="Output" VerticalAlignment="Top" Height="160" Width="241"/>
-        <ListView x:Name="datesListView" ItemsSource="{x:Bind plotModel.Currency}" HorizontalAlignment="Left" Height="278" Margin="730,160,0,0" VerticalAlignment="Top" Width="242">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,0,-0.4,55.2">
+
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,0,0,608">
+            <RelativePanel Margin="10,10,10,0">
+                <Button x:Name="closeApp" Content= "Close" RelativePanel.AlignRightWithPanel="True" Click = "cloesApp_Click"/>
+                <Rectangle x:Name="Rect" RelativePanel.LeftOf="closeApp"  Width="10" />
+                <Button x:Name="ForwardButton" Content = "Go Forward" RelativePanel.LeftOf="Rect" Click = "GoForward"/>
+                <Rectangle x:Name="Rect1" RelativePanel.LeftOf="ForwardButton"  Width="10" />
+                <Button x:Name="BackButton" Content = "Go Back" RelativePanel.LeftOf="Rect1"  Click = "GoBack"/>
+                <Rectangle x:Name="Rect2" RelativePanel.LeftOf="BackButton"  Width="10" />
+                <Button x:Name="MainPagebutton" Content= "Go to Main Page" RelativePanel.LeftOf="Rect2" Click = "Button_Click"/>
+             
+                 </RelativePanel>
+        </Grid>
+
+        <Grid Margin="0,72,0,475">
+            <RelativePanel Margin="10,10,10,0">
+                <TextBox x:Name="Ourcurrency"  Text="{x:Bind plotModel.CurrCode, Mode=TwoWay}"  TextWrapping="Wrap" IsReadOnly="True" />
+                <CalendarDatePicker  x:Name="MinDateOk" RelativePanel.RightOf="Ourcurrency" Margin="10,0" PlaceholderText="Select a start date" DateFormat="{}{year.full}/{month.integer}/{day.integer} " DateChanged="MinDateOk_DateChanged"/>
+                <TextBlock x:Name="initChooser" RelativePanel.RightOf="MinDateOk" Margin="10,5" TextWrapping="Wrap" Text="to" />
+                <CalendarDatePicker  x:Name="MaxDateOk" RelativePanel.RightOf="initChooser" Margin="10,0" PlaceholderText="Select an end date" DateFormat="{}{year.full}/{month.integer}/{day.integer}" DateChanged="MaxDateOk_DateChanged"/>
+
+                <Button x:Name="plotGraph" Content="Plot" RelativePanel.RightOf="MaxDateOk" Margin="20,0" Click = "plotGraph_Click"/>
+                <Button x:Name="cancelGraph" Content="Cancel" RelativePanel.RightOf="plotGraph" Click = "cancelButton_Click"/>
+
+            </RelativePanel>
+         
+       </Grid>
+        <TextBox x:Name="resultsTextBox" HorizontalAlignment="Left" Margin="740,412,0,0" TextWrapping="Wrap" Text="Output" VerticalAlignment="Top" Height="189" Width="241"/>
+        <ListView x:Name="datesListView" ItemsSource="{x:Bind plotModel.Currency}" HorizontalAlignment="Left" Height="278" Margin="748,82,0,0" VerticalAlignment="Top" Width="242">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local:CurrencyModel">
                     <StackPanel Orientation="Horizontal" Margin="6">
@@ -47,7 +63,7 @@
             </Grid.ColumnDefinitions>
 
             <syncfusion:SfChart x:Name="This_chart" HorizontalAlignment="Left" VerticalAlignment="Bottom" Header="Currency history" FontSize="20" 
-                    Height="500" Width="700" Grid.ColumnSpan="2">
+                    Height="500" Width="700" Grid.ColumnSpan="2" Margin="0,0,0,18">
 
                 <!--Initialize the horizontal axis for SfChart-->
                 <syncfusion:SfChart.PrimaryAxis>
@@ -69,18 +85,16 @@
 
                 <!--Initialize the series for SfChart-->
                 <syncfusion:FastLineSeries  ItemsSource="{x:Bind plotModel.Currency, Mode=OneWay}" 
-    XBindingPath="Date" YBindingPath="Rate" />
-
-
+    XBindingPath="Date" YBindingPath="Rate" Margin="0,-3,-0.4,3" />
 
             </syncfusion:SfChart>
-           
-
         </Grid>
-        <ProgressBar  x:Name="download_progressBar" HorizontalAlignment="Left" Height="10" Margin="731,455,0,0" VerticalAlignment="Top" Width="239"/>
+        <ProgressBar  x:Name="download_progressBar" HorizontalAlignment="Left" Height="10" Margin="740,386,0,0" VerticalAlignment="Top" Width="239"/>
 
-        <Button x:Name="Save_Btn" Content = "Save chart" Margin = "783,666,0,36" Click = "Save_Btn_Click"/>
-        <Button x:Name="closeApp" Content= "Close" Margin = "913,666,0,36" Click = "cloesApp_Click"/>
+       
+        <RelativePanel Margin="10,10,10,10">
+            <Button x:Name="Save_Btn" Content = "Save chart" RelativePanel.AlignBottomWithPanel="True" RelativePanel.AlignRightWithPanel="True" Click = "Save_Btn_Click"/>
+        </RelativePanel>
 
     </Grid>
 </Page>

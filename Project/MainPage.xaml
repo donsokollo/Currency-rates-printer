@@ -5,39 +5,63 @@
     xmlns:local="using:Project"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" Height="535.6" Width="905.2">
+    mc:Ignorable="d" Height="535.6" Width="856.6">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,0,209,0.2">
-        <Button x:Name="getDatesBtn" Content="Get dates" HorizontalAlignment="Left" Margin="50,23,0,0" VerticalAlignment="Top" Click="getDatesBtn_Click"/>
-        <Button x:Name="changePage" Content = "Go to TableWriter" Margin = "518,23,0,479" Click = "Button_Click_1"/>
-        <TextBlock x:Name="statusText" HorizontalAlignment="Left" Margin="32,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top">
-            <Run Text="Status:"/>
-            <LineBreak/>
-            <Run/>
-        </TextBlock>
-        <ListView x:Name="datesListView" ItemsSource="{x:Bind viewModel.Dates}" SelectionChanged="datesListView_SelectionChanged"  HorizontalAlignment="Left" Height="385" Margin="31,117,0,0" VerticalAlignment="Top" Width="242"/>
-        <ListView x:Name="currencyListView" ItemsSource="{x:Bind viewModel.Currency}" SelectionChanged="currencyListView_SelectionChanged" HorizontalAlignment="Left" Height="385" Margin="277,117,0,0" VerticalAlignment="Top" Width="410">
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="local:CurrencyModel">
-                    <StackPanel Orientation="Horizontal" Margin="6">
-                        <SymbolIcon Symbol="Calculator" Margin="0,0,12,0"/>
-                        <StackPanel>
-                            <TextBlock Text="{x:Bind FirstLine}" FontWeight="Bold"/>
-                            <TextBlock Text="{x:Bind SecondLine}"/>
+        <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Margin="0,0,0,489">
+            <RelativePanel Margin="10,10,10,0">
+                <Button x:Name="cloesApp" Content="Close" RelativePanel.AlignRightWithPanel="True"   Click="cloesApp_Click"/>
+                <Rectangle x:Name="Rect" RelativePanel.LeftOf="cloesApp"  Width="10" />
+                <Button x:Name="changePage" Content = "Currency history" RelativePanel.LeftOf="Rect" Click = "Button_Click_1" Margin="-104.8,0.2,0,-0.4" />
+                
+                <Rectangle x:Name="RectN" RelativePanel.LeftOf="changePage"  Width="10" />
+
+                <Button x:Name="ForwardButton" Content = "Go Forward" RelativePanel.LeftOf="changePage" Click = "GoForward" Margin="-213,0,0,0.0"/>
+            </RelativePanel>
+        </Grid>
+        <Grid Margin="0,51,0,0" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="161*"/>
+                <ColumnDefinition Width="55*"/>
+            </Grid.ColumnDefinitions>
+            <RelativePanel Margin="10,10,10,0" Grid.ColumnSpan="2">
+                <Button x:Name="getDatesBtn" Content="Get dates"  RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignTopWithPanel="True" Click="getDatesBtn_Click"/>
+                <Rectangle x:Name="Rect1" RelativePanel.Below="getDatesBtn"  Height="10" />
+                <TextBlock x:Name="statusText"  RelativePanel.Below="Rect1" TextWrapping="Wrap" >
+                    <Run Text="Status:"/>
+                    <LineBreak/>
+                    <Run/>
+                </TextBlock>
+                <Rectangle x:Name="Rect2" RelativePanel.RightOf="getDatesBtn"  Width="10" />
+                <TextBlock x:Name="textBlock" RelativePanel.RightOf="Rect2" TextWrapping="Wrap" Text="Rates for" />
+                <Rectangle x:Name="Rect3" RelativePanel.RightOf="textBlock"  Width="10" />
+                <TextBlock x:Name="dateFor" RelativePanel.RightOf="Rect3" TextWrapping="Wrap" Text="{x:Bind viewModel.LastDate, Mode=TwoWay}" VerticalAlignment="Top"/>
+
+
+            </RelativePanel>
+
+        </Grid>
+        <RelativePanel Margin="10,151,10,10">
+
+            <ListView x:Name="datesListView" ItemsSource="{x:Bind viewModel.Dates}" SelectionChanged="datesListView_SelectionChanged"  RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True" Width="242"/>
+
+            <ListView x:Name="currencyListView" ItemsSource="{x:Bind viewModel.Currency}" SelectionChanged="currencyListView_SelectionChanged" RelativePanel.RightOf="datesListView" Width="410">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="local:CurrencyModel">
+                        <StackPanel Orientation="Horizontal" Margin="6">
+                            <SymbolIcon Symbol="Calculator" Margin="0,0,12,0"/>
+                            <StackPanel>
+                                <TextBlock Text="{x:Bind FirstLine}" FontWeight="Bold"/>
+                                <TextBlock Text="{x:Bind SecondLine}"/>
+                            </StackPanel>
                         </StackPanel>
-                    </StackPanel>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-        <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="278,81,0,0" TextWrapping="Wrap" Text="Rates for" VerticalAlignment="Top"/>
-        <TextBlock x:Name="dateFor" HorizontalAlignment="Left" Margin="367,81,0,0" TextWrapping="Wrap" Text="{x:Bind viewModel.LastDate, Mode=TwoWay}" VerticalAlignment="Top"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
 
-        <Button x:Name="cloesApp" Content="Close" HorizontalAlignment="Left" Margin="599,469,0,0" VerticalAlignment="Top" Click="cloesApp_Click"/>
-
-
-
+        </RelativePanel>
     </Grid>
 
-    
+
 
 </Page>

@@ -328,6 +328,7 @@ namespace Project
         {
             if (this.Frame != null && this.Frame.CanGoForward) this.Frame.GoForward();
             ViewModel.getInstance();
+            PlotModel.getInstance();
         }
 #if WINDOWS_PHONE_APP
         void HardwareButtons_BackPressed(object sender,

@@ -160,6 +160,13 @@ namespace Project
             this.Frame.Navigate(typeof(TableWriter), SerializedData);
         }
 
+        void GoForward(object sender, RoutedEventArgs e)
+        {
+            if (this.Frame != null && this.Frame.CanGoForward) this.Frame.GoForward();
+            ViewModel.getInstance();
+            PlotModel.getInstance();
+        }
+
         private void cloesApp_Click(object sender, RoutedEventArgs e)
         {
             
